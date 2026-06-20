@@ -1,5 +1,1 @@
-aes.key
-data.sign
-rsa_cipher.bin
-rsa_private.pem
-rsa_public.pem
+# No generated files to ignore — all keys are in-memory only

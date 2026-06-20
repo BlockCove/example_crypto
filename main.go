@@ -12,11 +12,11 @@ var rawText = []byte("Hello Golang 对称+非对称加密+签名完整演示 测
 
 func main() {
 	fmt.Println("===== 一、AES 对称加解密演示 =====")
-	aesKey, err := aesutil.GenAndSaveAesKey()
+	aesKey, err := aesutil.GenAesKey()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("AES密钥文件: %s\n密钥HEX: %x\n", aesutil.AesKeyFile, aesKey)
+	fmt.Printf("密钥HEX: %x\n", aesKey)
 
 	encStr, err := aesutil.AesEncrypt(rawText, aesKey)
 	if err != nil {
@@ -35,7 +35,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("私钥: %s\n公钥: %s\n密文文件: %s\n", rsautil.RsaPriFile, rsautil.RsaPubFile, rsautil.RsaEncFile)
 
 	rsaCipher, err := rsautil.RsaEncrypt(pub, rawText)
 	if err != nil {
@@ -54,7 +53,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("签名文件: %s\n签名HEX: %x\n", rsautil.SignFile, signBuf)
+	fmt.Printf("签名HEX: %x\n", signBuf)
 
 	ok := rsautil.RsaVerify(pub, rawText, signBuf)
 	fmt.Printf("正常数据验签: %t\n", ok)

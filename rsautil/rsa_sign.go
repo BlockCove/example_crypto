@@ -5,22 +5,14 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
-	"os"
 )
-
-const SignFile = "data.sign"
 
 // 私钥生成签名
 func RsaSign(pri *rsa.PrivateKey, data []byte) ([]byte, error) {
 	h := sha256.New()
 	h.Write(data)
 	digest := h.Sum(nil)
-	sig, err := rsa.SignPKCS1v15(rand.Reader, pri, crypto.SHA256, digest)
-	if err != nil {
-		return nil, err
-	}
-	_ = os.WriteFile(SignFile, sig, 0644)
-	return sig, nil
+	return rsa.SignPKCS1v15(rand.Reader, pri, crypto.SHA256, digest)
 }
 
 // 公钥验证签名

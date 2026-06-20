@@ -6,10 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"os"
 )
-
-const AesKeyFile = "aes.key"
 
 // PKCS7填充
 func pkcs7Pad(data []byte, blockSize int) []byte {
@@ -27,8 +24,14 @@ func pkcs7Unpad(data []byte) ([]byte, error) {
 		return nil, fmt.Errorf("empty data")
 	}
 	padLen := int(data[len(data)-1])
-	if padLen <= 0 || padLen > len(data) {
+	if padLen <= 0 || padLen > len(data) || padLen > aes.BlockSize {
 		return nil, fmt.Errorf("invalid padding")
+	}
+	// 验证所有填充字节的值都等于 padLen
+	for _, b := range data[len(data)-padLen:] {
+		if b != byte(padLen) {
+			return nil, fmt.Errorf("invalid padding")
+		}
 	}
 	return data[:len(data)-padLen], nil
 }
@@ -72,17 +75,11 @@ func AesDecrypt(cipherBase64 string, key []byte) ([]byte, error) {
 	return pkcs7Unpad(cipherText)
 }
 
-// 生成AES-256密钥并写入文件
-func GenAndSaveAesKey() ([]byte, error) {
+// 生成AES-256密钥
+func GenAesKey() ([]byte, error) {
 	key := make([]byte, 32)
 	if _, err := rand.Read(key); err != nil {
 		return nil, err
 	}
-	err := os.WriteFile(AesKeyFile, key, 0644)
-	return key, err
-}
-
-// 读取已存在AES密钥文件
-func LoadAesKey() ([]byte, error) {
-	return os.ReadFile(AesKeyFile)
+	return key, nil
 }
